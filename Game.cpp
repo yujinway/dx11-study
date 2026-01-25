@@ -78,9 +78,8 @@ void Game::Render()
 	auto context = m_deviceResources->GetD3DDeviceContext();
 
 	// TODO: Add your rendering code here.
-	float time = float(m_timer.GetTotalSeconds());
-	m_spriteBatch->Begin();
-	m_spriteBatch->Draw(m_texture.Get(), m_screenPos, nullptr, Colors::Green, 0.f, m_origin);
+	m_spriteBatch->Begin(SpriteSortMode_Deferred, nullptr, m_states->LinearWrap());
+	m_spriteBatch->Draw(m_texture.Get(), m_screenPos, &m_tileRect, Colors::White, 0.f, m_origin);
 	m_spriteBatch->End();
 
 	m_deviceResources->PIXEndEvent();
@@ -184,8 +183,14 @@ void Game::CreateDeviceDependentResources()
 	CD3D11_TEXTURE2D_DESC catDesc;
 	cat->GetDesc(&catDesc);
 
-	m_origin.x = float(catDesc.Width / 2);
-	m_origin.y = float(catDesc.Height / 2);
+	m_origin.x = float(catDesc.Width * 2);
+	m_origin.y = float(catDesc.Height * 2);
+
+	m_tileRect.left = catDesc.Width * 2;
+	m_tileRect.right = catDesc.Width * 6;
+	m_tileRect.top = catDesc.Height * 2;
+	m_tileRect.bottom = catDesc.Height * 6;
+
 
 	m_states = std::make_unique<CommonStates>(device);
 }
