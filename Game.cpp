@@ -79,7 +79,7 @@ void Game::Render()
 
 	// TODO: Add your rendering code here.
 	context;
-	m_spriteBatch->Begin(SpriteSortMode_Deferred, m_states->NonPremultiplied());
+	m_spriteBatch->Begin();
 	m_spriteBatch->Draw(m_texture.Get(), m_screenPos, nullptr, Colors::White, 0.f, m_origin);
 	m_spriteBatch->End();
 
@@ -176,7 +176,7 @@ void Game::CreateDeviceDependentResources()
 	m_spriteBatch = std::make_unique<SpriteBatch>(context);
 
 	ComPtr<ID3D11Resource> resource;
-	DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"cat.png", resource.GetAddressOf(), m_texture.ReleaseAndGetAddressOf()));
+	DX::ThrowIfFailed(CreateDDSTextureFromFile(device, L"cat.dds", resource.GetAddressOf(), m_texture.ReleaseAndGetAddressOf()));
 
 	ComPtr<ID3D11Texture2D> cat;
 	DX::ThrowIfFailed(resource.As(&cat));
