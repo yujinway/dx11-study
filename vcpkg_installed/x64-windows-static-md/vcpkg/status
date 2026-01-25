@@ -30,3 +30,20 @@ Abi: 4c5fedc31cda131a04bb881ff020a3d12b28375d65d54497d0b3e5bf352e3fb0
 Description: A collection of helper classes for writing DirectX 11.x code in C++.
 Status: install ok installed
 
+Package: directxtex
+Version: 2025-10-27
+Depends: directxmath, vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Abi: 10aa92f0937741eb9c5b3d3c47154f7c514ce163e0b16518c3949ebb68ed4db7
+Description: DirectXTex texture processing library
+Default-Features: dx11
+Status: install ok installed
+
+Package: directxtex
+Feature: dx11
+Architecture: x64-windows-static-md
+Multi-Arch: same
+Description: Build with DirectX11 support
+Status: install ok installed
+
