@@ -80,7 +80,7 @@ void Game::Render()
 	// TODO: Add your rendering code here.
 	float time = float(m_timer.GetTotalSeconds());
 	m_spriteBatch->Begin();
-	m_spriteBatch->Draw(m_texture.Get(), m_screenPos, nullptr, Colors::White, cosf(time) * 4.f, m_origin);
+	m_spriteBatch->Draw(m_texture.Get(), m_screenPos, nullptr, Colors::White, 0.f, m_origin, cosf(time) + 2.f);
 	m_spriteBatch->End();
 
 	m_deviceResources->PIXEndEvent();
