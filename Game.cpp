@@ -78,8 +78,9 @@ void Game::Render()
 	auto context = m_deviceResources->GetD3DDeviceContext();
 
 	// TODO: Add your rendering code here.
-	m_spriteBatch->Begin(SpriteSortMode_Deferred, nullptr, m_states->LinearWrap());
-	m_spriteBatch->Draw(m_texture.Get(), m_screenPos, &m_tileRect, Colors::White, 0.f, m_origin);
+	m_spriteBatch->Begin();
+	m_spriteBatch->Draw(m_background.Get(), m_fullscreenRect);
+	m_spriteBatch->Draw(m_texture.Get(), m_screenPos, nullptr, Colors::White, 0.f, m_origin);
 	m_spriteBatch->End();
 
 	m_deviceResources->PIXEndEvent();
@@ -183,16 +184,12 @@ void Game::CreateDeviceDependentResources()
 	CD3D11_TEXTURE2D_DESC catDesc;
 	cat->GetDesc(&catDesc);
 
-	m_origin.x = float(catDesc.Width * 2);
-	m_origin.y = float(catDesc.Height * 2);
-
-	m_tileRect.left = catDesc.Width * 2;
-	m_tileRect.right = catDesc.Width * 6;
-	m_tileRect.top = catDesc.Height * 2;
-	m_tileRect.bottom = catDesc.Height * 6;
-
+	m_origin.x = float(catDesc.Width / 2);
+	m_origin.y = float(catDesc.Height / 2);
 
 	m_states = std::make_unique<CommonStates>(device);
+
+	DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"sunset.jpg", nullptr, m_background.ReleaseAndGetAddressOf()));
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
@@ -202,6 +199,8 @@ void Game::CreateWindowSizeDependentResources()
 	auto size = m_deviceResources->GetOutputSize();
 	m_screenPos.x = float(size.right) / 2.f;
 	m_screenPos.y = float(size.bottom) / 2.f;
+
+	m_fullscreenRect = m_deviceResources->GetOutputSize();
 }
 
 void Game::OnDeviceLost()
@@ -210,6 +209,7 @@ void Game::OnDeviceLost()
 	m_texture.Reset();
 	m_spriteBatch.reset();
 	m_states.reset();
+	m_background.Reset();
 }
 
 void Game::OnDeviceRestored()

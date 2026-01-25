@@ -71,5 +71,6 @@ private:
 
 	std::unique_ptr<DirectX::CommonStates> m_states;
 
-	RECT m_tileRect;
+	RECT m_fullscreenRect;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_background;
 };
