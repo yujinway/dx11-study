@@ -79,7 +79,7 @@ void Game::Render()
 
 	// TODO: Add your rendering code here.
 	context;
-	m_spriteBatch->Begin();
+	m_spriteBatch->Begin(SpriteSortMode_Deferred, m_states->NonPremultiplied());
 	m_spriteBatch->Draw(m_texture.Get(), m_screenPos, nullptr, Colors::White, 0.f, m_origin);
 	m_spriteBatch->End();
 
@@ -186,6 +186,8 @@ void Game::CreateDeviceDependentResources()
 
 	m_origin.x = float(catDesc.Width / 2);
 	m_origin.y = float(catDesc.Height / 2);
+
+	m_states = std::make_unique<CommonStates>(device);
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
@@ -202,6 +204,7 @@ void Game::OnDeviceLost()
 	// TODO: Add Direct3D resource cleanup here.
 	m_texture.Reset();
 	m_spriteBatch.reset();
+	m_states.reset();
 }
 
 void Game::OnDeviceRestored()
