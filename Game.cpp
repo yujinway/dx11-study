@@ -58,6 +58,7 @@ void Game::Update(DX::StepTimer const& timer)
 
 	// TODO: Add your game logic here.
 	m_ship->Update(elapsedTime);
+	m_stars->Update(elapsedTime * 500);
 }
 #pragma endregion
 
@@ -78,7 +79,10 @@ void Game::Render()
 
 	// TODO: Add your rendering code here.
 	m_spriteBatch->Begin();
+
+	m_stars->Draw(m_spriteBatch.get());
 	m_ship->Draw(m_spriteBatch.get(), m_shipPos);
+
 	m_spriteBatch->End();
 
 	m_deviceResources->PIXEndEvent();
@@ -177,6 +181,11 @@ void Game::CreateDeviceDependentResources()
 
 	m_ship = std::make_unique<AnimatedTexture>();
 	m_ship->Load(m_texture.Get(), 4, 20);
+
+	DX::ThrowIfFailed(CreateWICTextureFromFile(device, L"starfield.png", nullptr, m_backgroundTex.ReleaseAndGetAddressOf()));
+
+	m_stars = std::make_unique<ScrollingBackground>();
+	m_stars->Load(m_backgroundTex.Get());
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
@@ -186,6 +195,8 @@ void Game::CreateWindowSizeDependentResources()
 	auto size = m_deviceResources->GetOutputSize();
 	m_shipPos.x = float(size.right / 2);
 	m_shipPos.y = float((size.bottom / 2) + (size.bottom / 4));
+
+	m_stars->SetWindow(size.right, size.bottom);
 }
 
 void Game::OnDeviceLost()
@@ -194,6 +205,9 @@ void Game::OnDeviceLost()
 	m_ship.reset();
 	m_spriteBatch.reset();
 	m_texture.Reset();
+
+	m_stars.reset();
+	m_backgroundTex.Reset();
 }
 
 void Game::OnDeviceRestored()
