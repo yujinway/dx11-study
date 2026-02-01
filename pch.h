@@ -51,35 +51,55 @@
 #include <system_error>
 #include <tuple>
 
+#include <directxtk/BufferHelpers.h>
+#include <directxtk/CommonStates.h>
+#include <directxtk/DDSTextureLoader.h>
+#include <directxtk/DirectXHelpers.h>
+#include <directxtk/Effects.h>
+#include <directxtk/GamePad.h>
+#include <directxtk/GeometricPrimitive.h>
+#include <directxtk/GraphicsMemory.h>
+#include <directxtk/Keyboard.h>
+#include <directxtk/Model.h>
+#include <directxtk/Mouse.h>
+#include <directxtk/PostProcess.h>
+#include <directxtk/PrimitiveBatch.h>
+#include <directxtk/ScreenGrab.h>
+#include <directxtk/SimpleMath.h>
+#include <directxtk/SpriteBatch.h>
+#include <directxtk/SpriteFont.h>
+#include <directxtk/VertexTypes.h>
+#include <directxtk/WICTextureLoader.h>
+
 #ifdef _DEBUG
 #include <dxgidebug.h>
 #endif
 
 namespace DX
 {
-    // Helper class for COM exceptions
-    class com_exception : public std::exception
-    {
-    public:
-        com_exception(HRESULT hr) noexcept : result(hr) {}
+	// Helper class for COM exceptions
+	class com_exception : public std::exception
+	{
+	public:
+		com_exception(HRESULT hr) noexcept : result(hr) {}
 
-        const char* what() const noexcept override
-        {
-            static char s_str[64] = {};
-            sprintf_s(s_str, "Failure with HRESULT of %08X", static_cast<unsigned int>(result));
-            return s_str;
-        }
+		const char* what() const noexcept override
+		{
+			static char s_str[64] = {};
+			sprintf_s(s_str, "Failure with HRESULT of %08X", static_cast<unsigned int>(result));
+			return s_str;
+		}
 
-    private:
-        HRESULT result;
-    };
+	private:
+		HRESULT result;
+	};
 
-    // Helper utility converts D3D API failures into exceptions.
-    inline void ThrowIfFailed(HRESULT hr)
-    {
-        if (FAILED(hr))
-        {
-            throw com_exception(hr);
-        }
-    }
+	// Helper utility converts D3D API failures into exceptions.
+	inline void ThrowIfFailed(HRESULT hr)
+	{
+		if (FAILED(hr))
+		{
+			throw com_exception(hr);
+		}
+	}
 }
