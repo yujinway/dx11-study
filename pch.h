@@ -50,6 +50,9 @@
 #include <stdexcept>
 #include <system_error>
 #include <tuple>
+#include <string>
+#include <codecvt>
+#include <locale>
 
 #include <directxtk/BufferHelpers.h>
 #include <directxtk/CommonStates.h>
