@@ -77,7 +77,23 @@ void Game::Render()
     auto context = m_deviceResources->GetD3DDeviceContext();
 
     // TODO: Add your rendering code here.
-    context;
+    context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
+    context->OMSetDepthStencilState(m_states->DepthNone(), 0);
+    context->RSSetState(m_states->CullNone());
+    
+    m_effect->Apply(context);
+    
+    context->IASetInputLayout(m_inputLayout.Get());
+    
+    m_batch->Begin();
+    
+    VertexPositionColor v1(SimpleMath::Vector3(0.f, 0.5f, 0.5f), Colors::Yellow);
+    VertexPositionColor v2(SimpleMath::Vector3(0.5f, -0.5f, 0.5f), Colors::Yellow);
+    VertexPositionColor v3(SimpleMath::Vector3(-0.5f, -0.5f, 0.5f), Colors::Yellow);
+    
+    m_batch->DrawTriangle(v1, v2, v3);
+    
+    m_batch->End();
 
     m_deviceResources->PIXEndEvent();
 
@@ -168,7 +184,17 @@ void Game::CreateDeviceDependentResources()
     auto device = m_deviceResources->GetD3DDevice();
 
     // TODO: Initialize device dependent objects here (independent of window size).
-    device;
+    m_states = std::make_unique<CommonStates>(device);
+    
+    m_effect = std::make_unique<BasicEffect>(device);
+    m_effect->SetVertexColorEnabled(true);
+    
+    DX::ThrowIfFailed(
+        CreateInputLayoutFromEffect<VertexType>(device, m_effect.get(), m_inputLayout.ReleaseAndGetAddressOf())
+        );
+    
+    auto context = m_deviceResources->GetD3DDeviceContext();
+    m_batch = std::make_unique<PrimitiveBatch<VertexType>>(context);
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
@@ -180,6 +206,10 @@ void Game::CreateWindowSizeDependentResources()
 void Game::OnDeviceLost()
 {
     // TODO: Add Direct3D resource cleanup here.
+    m_states.reset();
+    m_effect.reset();
+    m_batch.reset();
+    m_inputLayout.Reset();
 }
 
 void Game::OnDeviceRestored()
