@@ -83,13 +83,16 @@ void Game::Render()
 
     m_effect->Apply(context);
 
+    auto sampler = m_states->LinearClamp();
+    context->PSSetSamplers(0, 1, &sampler);
+    
     context->IASetInputLayout(m_inputLayout.Get());
 
     m_batch->Begin();
 
-    VertexPositionColor v1(SimpleMath::Vector3(400., 150.f, 0.f), Colors::Red);
-    VertexPositionColor v2(SimpleMath::Vector3(600.f, 450.f, 0.f), Colors::Green);
-    VertexPositionColor v3(SimpleMath::Vector3(200.f, 450.f, 0.f), Colors::Blue);
+    VertexPositionTexture v1(SimpleMath::Vector3(400., 150.f, 0.f), SimpleMath::Vector2(.5f, 0));
+    VertexPositionTexture v2(SimpleMath::Vector3(600.f, 450.f, 0.f), SimpleMath::Vector2(1, 1));
+    VertexPositionTexture v3(SimpleMath::Vector3(200.f, 450.f, 0.f), SimpleMath::Vector2(0, 1));
 
     m_batch->DrawTriangle(v1, v2, v3);
 
@@ -185,14 +188,18 @@ void Game::CreateDeviceDependentResources()
 
     // TODO: Initialize device dependent objects here (independent of window size).
     m_states = std::make_unique<CommonStates>(device);
-
     m_effect = std::make_unique<BasicEffect>(device);
-    m_effect->SetVertexColorEnabled(true);
-
+    m_effect->SetTextureEnabled(true);
+    
+    DX::ThrowIfFailed(
+        CreateWICTextureFromFile(device, L"rocks.jpg", nullptr, m_texture.ReleaseAndGetAddressOf()));
+    
+    m_effect->SetTexture(m_texture.Get());
+    
     DX::ThrowIfFailed(
         CreateInputLayoutFromEffect<VertexType>(device, m_effect.get(), m_inputLayout.ReleaseAndGetAddressOf())
-    );
-
+        );
+    
     auto context = m_deviceResources->GetD3DDeviceContext();
     m_batch = std::make_unique<PrimitiveBatch<VertexType>>(context);
 }
@@ -215,6 +222,7 @@ void Game::OnDeviceLost()
     m_effect.reset();
     m_batch.reset();
     m_inputLayout.Reset();
+    m_texture.Reset();
 }
 
 void Game::OnDeviceRestored()
